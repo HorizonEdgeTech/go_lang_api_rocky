@@ -15,7 +15,7 @@ import (
 )
 
 const sql_create = `
-CREATE TABLE applicant(
+CREATE TABLE IF NOT EXISTS applicant(
     id_number INT PRIMARY KEY,
     surname VARCHAR(20) NOT NULL,
     other_name VARCHAR(50) NOT NULL,
@@ -25,7 +25,7 @@ CREATE TABLE applicant(
     alternative_number VARCHAR(20)
 );
 
-CREATE TABLE applicant_address_details(
+CREATE TABLE IF NOT EXISTS applicant_address_details(
     postal_address int primary key,
     city VARCHAR(50) NOT NULL,
     code VARCHAR(50) NOT NULL,
@@ -38,7 +38,7 @@ CREATE TABLE applicant_address_details(
     id_number int REFERENCES applicant(id_number)
 );
 
-CREATE TABLE loan(
+CREATE TABLE IF NOT EXISTS loan(
     loan_id INT PRIMARY KEY,
     loan_amount NUMERIC(6, 2),
     purpose TEXT NOT NULL,
@@ -47,31 +47,31 @@ CREATE TABLE loan(
     id_number INT REFERENCES applicant(id_number)
 );
 
-CREATE TABLE guarantor(
+CREATE TABLE IF NOT EXISTS guarantor(
     id_number INT PRIMARY KEY,
     name text not null,
     mobile_number VARCHAR(13)
 );
 
-CREATE TABLE guaranteed_loans(
+CREATE TABLE IF NOT EXISTS guaranteed_loans(
     applicant_id int REFERENCES applicant(id_number),
     guarantor_id INT REFERENCES guarantor(id_number),
     reationship TEXT NOT NULL,
     PRIMARY KEY(applicant_id, guarantor_id)
 );
 
-CREATE TABLE bank(
+CREATE TABLE IF NOT EXISTS bank(
     bank_name VARCHAR(80), CHECK(bank_name IN ('Equity bank', 'Cooperative Bank')),--to-be-completed 
     PRIMARY KEY(bank_name)   
 );
 
-CREATE TABLE account_details(
+CREATE TABLE IF NOT EXISTS account_details(
     id int REFERENCES applicant(id_number),
     bank_name VARCHAR(80)  REFERENCES bank(bank_name),
     PRIMARY KEY (id, bank_name)
 );
 
-CREATE TABLE next_of_kin(
+CREATE TABLE IF NOT EXISTS next_of_kin(
     id_number INT PRIMARY KEY,
     surname VARCHAR(50) NOT NULL,
     other_name VARCHAR(80),
@@ -80,14 +80,14 @@ CREATE TABLE next_of_kin(
     mobile_number VARCHAR(13) NOT NULL
 );
 
-CREATE TABLE applicant_relationship(
+CREATE TABLE IF NOT EXISTS applicant_relationship(
     applicant_id_number INT REFERENCES applicant(id_number),
     nok_id_number INT REFERENCES next_of_kin(id_number), --next of kin ID number
     relationship VARCHAR(50) NOT NULL,
     PRIMARY KEY(applicant_id_number, nok_id_number)
 );
 
-CREATE TABLE loan_repayment(
+CREATE TABLE IF NOT EXISTS loan_repayment(
     loan_id INT REFERENCES loan(loan_id),
     paid_amount NUMERIC(9, 2) NOT NULL,
     date_paid DATE NOT NULL,
@@ -95,7 +95,7 @@ CREATE TABLE loan_repayment(
     PRIMARY KEY(loan_id)
 );
 
-CREATE TABLE loan_defaulters(
+CREATE TABLE IF NOT EXISTS loan_defaulters(
     loan_id INT REFERENCES loan(loan_id),
     amount_due NUMERIC(9, 2),
     days_overdue INT NOT NULL
